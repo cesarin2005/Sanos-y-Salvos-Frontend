@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sanos y Salvos</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="logo">
+        <span class="logo-icon">🐾</span>
+        <h1>Sanos y Salvos</h1>
+        <p>Plataforma de mascotas perdidas</p>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="showTab('login')">Iniciar sesión</button>
+        <button class="tab" onclick="showTab('register')">Registrarse</button>
+      </div>
+
+      <!-- LOGIN -->
+      <div id="login" class="form-section">
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="email" id="login-email" placeholder="correo@ejemplo.com" />
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="login-password" placeholder="••••••••" />
+        </div>
+        <button class="btn-primary" onclick="login()">Iniciar sesión</button>
+        <div id="login-msg" class="message"></div>
+      </div>
+
+      <!-- REGISTRO -->
+      <div id="register" class="form-section hidden">
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" id="reg-name" placeholder="Juan Pérez" />
+        </div>
+        <div class="form-group">
+          <label>Correo electrónico</label>
+          <input type="email" id="reg-email" placeholder="correo@ejemplo.com" />
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="reg-password" placeholder="••••••••" />
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="text" id="reg-phone" placeholder="+56 9 1234 5678" />
+        </div>
+        <div class="form-group">
+          <label>Ciudad</label>
+          <input type="text" id="reg-city" placeholder="Santiago" />
+        </div>
+        <button class="btn-primary" onclick="register()">Crear cuenta</button>
+        <div id="register-msg" class="message"></div>
+      </div>
+
+    </div>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
