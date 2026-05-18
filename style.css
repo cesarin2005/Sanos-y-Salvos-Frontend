@@ -1,0 +1,155 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #e8f5e9, #e3f2fd);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.logo-icon {
+  font-size: 48px;
+}
+
+.logo h1 {
+  color: #1A5276;
+  font-size: 24px;
+  margin-top: 8px;
+}
+
+.logo p {
+  color: #7A8A99;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.tabs {
+  display: flex;
+  background: #f0f4f8;
+  border-radius: 10px;
+  padding: 4px;
+  margin-bottom: 28px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #7A8A99;
+  transition: all 0.2s;
+}
+
+.tab.active {
+  background: white;
+  color: #1A5276;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.form-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-section.hidden {
+  display: none;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-group label {
+  font-size: 13px;
+  color: #1C2833;
+  font-weight: 600;
+}
+
+.form-group input {
+  padding: 12px 16px;
+  border: 1.5px solid #e0e6ed;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #1C2833;
+  transition: border 0.2s;
+  outline: none;
+}
+
+.form-group input:focus {
+  border-color: #1A5276;
+}
+
+.btn-primary {
+  background: #1A5276;
+  color: white;
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2E86C1;
+}
+
+.message {
+  font-size: 13px;
+  text-align: center;
+  padding: 8px;
+  border-radius: 8px;
+  min-height: 20px;
+}
+
+.message.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.message.error {
+  background: #fdecea;
+  color: #c0392b;
+}
+
+@media (max-width: 480px) {
+  .card {
+    padding: 24px;
+  }
+}
