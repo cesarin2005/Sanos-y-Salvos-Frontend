@@ -73,7 +73,7 @@ Por defecto, la URL de la API está definida directamente en `app.js`:
 const API = 'http://localhost:8081';
 ```
 
-Para cambiarla, edita esa constante antes de hacer build.
+Para cambiarla, editar esa constante antes de hacer build.
 
 ## Pruebas
 
