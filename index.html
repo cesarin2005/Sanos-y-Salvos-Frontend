@@ -4,64 +4,399 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sanos y Salvos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Finger+Paint&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <div class="card">
-      <div class="logo">
-        <span class="logo-icon">🐾</span>
-        <h1>Sanos y Salvos</h1>
-        <p>Plataforma de mascotas perdidas</p>
-      </div>
 
-      <div class="tabs">
-        <button class="tab active" onclick="showTab('login')">Iniciar sesión</button>
-        <button class="tab" onclick="showTab('register')">Registrarse</button>
-      </div>
+<nav>
+  <a class="nav-logo" href="#">
+    <img src="logo.png" alt="Sanos y Salvos" style="height: 190px;" />
+  </a>
+  <div class="nav-actions">
+    <button class="btn-publish" onclick="openPublish()">+ Publicar</button>
+  </div>
+</nav>
 
-      <!-- LOGIN -->
-      <div id="login" class="form-section">
-        <div class="form-group">
-          <label>Correo electrónico</label>
-          <input type="email" id="login-email" placeholder="correo@ejemplo.com" />
-        </div>
-        <div class="form-group">
-          <label>Contraseña</label>
-          <input type="password" id="login-password" placeholder="••••••••" />
-        </div>
-        <button class="btn-primary" onclick="login()">Iniciar sesión</button>
-        <div id="login-msg" class="message"></div>
-      </div>
-
-      <!-- REGISTRO -->
-      <div id="register" class="form-section hidden">
-        <div class="form-group">
-          <label>Nombre completo</label>
-          <input type="text" id="reg-name" placeholder="Juan Pérez" />
-        </div>
-        <div class="form-group">
-          <label>Correo electrónico</label>
-          <input type="email" id="reg-email" placeholder="correo@ejemplo.com" />
-        </div>
-        <div class="form-group">
-          <label>Contraseña</label>
-          <input type="password" id="reg-password" placeholder="••••••••" />
-        </div>
-        <div class="form-group">
-          <label>Teléfono</label>
-          <input type="text" id="reg-phone" placeholder="+56 9 1234 5678" />
-        </div>
-        <div class="form-group">
-          <label>Ciudad</label>
-          <input type="text" id="reg-city" placeholder="Santiago" />
-        </div>
-        <button class="btn-primary" onclick="register()">Crear cuenta</button>
-        <div id="register-msg" class="message"></div>
-      </div>
-
+<div class="hero">
+  <div class="hero-left">
+    <p class="hero-sub">La comunidad que busca junto a ti</p>
+    <h2 class="hero-title">Ayuda a tu mascota a <span>volver a casa</span></h2>
+    <div class="hero-stat-single">
+      <div class="num" id="stat-reunited">0</div>
+      <div class="label">Familias reunidas</div>
     </div>
   </div>
-  <script src="app.js"></script>
+  <div class="hero-right">
+    <div class="hero-card">
+      <img src="hero-pet.png" alt="Mascota" class="hero-img" />
+    </div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="section-tabs">
+    <button class="section-tab active" id="tab-lost" onclick="showSection('lost')">
+      <i data-lucide="search"></i> Perdidos <span class="count" id="count-lost">0</span>
+    </button>
+    <button class="section-tab" id="tab-found" onclick="showSection('found')">
+      <i data-lucide="paw-print"></i> Buscan a su familia <span class="count" id="count-found">0</span>
+    </button>
+    <button class="section-tab" id="tab-reunited" onclick="showSection('reunited')">
+      <i data-lucide="house"></i> Reunidos <span class="count" id="count-reunited">0</span>
+    </button>
+  </div>
+
+  <div class="search-bar">
+    <input type="text" id="search-input" placeholder="Buscar por nombre, raza, ubicación..." oninput="filterCards()" />
+  </div>
+
+  <div class="filters-bar">
+    <div class="filter-group">
+      <label>Especie</label>
+      <select id="filter-species" onchange="updateBreedsBySpecies(this.value); filterCards()">
+        <option value="">Todas</option>
+        <option value="Perro">Perros</option>
+        <option value="Gato">Gatos</option>
+        <option value="Otro">Otros</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Sexo</label>
+      <select id="filter-gender" onchange="filterCards()">
+        <option value="">Todos</option>
+        <option value="Macho">Macho</option>
+        <option value="Hembra">Hembra</option>
+        <option value="Desconocido">Desconocido</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Raza</label>
+      <select id="filter-breed" onchange="filterCards()">
+        <option value="">Todas</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Color</label>
+      <select id="filter-color" onchange="filterCards()">
+        <option value="">Todos</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Comuna</label>
+      <div class="comuna-wrapper" id="comuna-wrapper">
+        <button class="comuna-btn" id="comuna-btn" type="button">
+          <span id="comuna-btn-text">Todas las comunas</span>
+          <i data-lucide="chevron-down"></i>
+        </button>
+        <div class="comuna-dropdown" id="comuna-dropdown">
+          <div class="comuna-search-wrap">
+            <i data-lucide="search"></i>
+            <input type="text" id="comuna-search" placeholder="Buscar comuna..." />
+          </div>
+          <ul class="comuna-list" id="comuna-list"></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="cards-container" class="cards-grid"></div>
+</div>
+
+<!-- MODAL PUBLICAR -->
+<div class="modal-overlay" id="modal-publish">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <h2 class="modal-title">Reportar mascota</h2>
+      <button class="btn-close" onclick="closeModal('modal-publish')">×</button>
+    </div>
+    <div class="form-group">
+      <label>Tipo de reporte</label>
+      <select id="pub-type" onchange="togglePubFields()">
+        <option value="lost">Perdí a mi mascota</option>
+        <option value="found">Encontré una mascota</option>
+      </select>
+    </div>
+    <div id="pub-lost-fields">
+      <div class="form-group">
+        <label>Nombre de la mascota</label>
+        <input type="text" id="pub-name" placeholder="Max" />
+      </div>
+    </div>
+    <div id="pub-found-name-fields" style="display:none">
+      <div class="form-group">
+        <label>Nombre de la mascota (si lo sabes)</label>
+        <input type="text" id="pub-found-name" placeholder="Opcional" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Especie</label>
+        <select id="pub-species" onchange="updatePubBreedsBySpecies()">
+          <option value="Perro">Perro</option>
+          <option value="Gato">Gato</option>
+          <option value="Otro">Otro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Sexo</label>
+        <select id="pub-gender">
+          <option value="Macho">Macho</option>
+          <option value="Hembra">Hembra</option>
+          <option value="Desconocido">Desconocido</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Raza</label>
+        <select id="pub-breed">
+          <option value="">Selecciona una raza</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Color</label>
+        <select id="pub-color">
+          <option value="">Selecciona un color</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Descripción</label>
+      <textarea id="pub-desc" rows="3" placeholder="Describe la mascota, señas particulares..."></textarea>
+    </div>
+    <div id="pub-lost-date-fields">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha en que se perdió</label>
+          <input type="date" id="pub-lost-date" />
+        </div>
+        <div class="form-group">
+          <label>Hora aproximada</label>
+          <input type="time" id="pub-lost-time" />
+        </div>
+      </div>
+    </div>
+    <div id="pub-found-date-fields" style="display:none">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Fecha en que fue encontrada</label>
+          <input type="date" id="pub-found-date" />
+        </div>
+        <div class="form-group">
+          <label>Hora aproximada</label>
+          <input type="time" id="pub-found-time" />
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Foto de la mascota</label>
+      <div class="photo-upload-wrap" onclick="document.getElementById('pub-photo').click()">
+        <input type="file" id="pub-photo" accept="image/*" style="display:none" onchange="previewPhoto(event)" />
+        <div id="photo-preview" class="photo-preview-empty">
+          <i data-lucide="camera"></i>
+          <span>Haz click para subir una foto</span>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Ubicación</label>
+      <div class="location-search-wrap">
+        <input type="text" id="pub-location" placeholder="Av. Providencia 1234, Santiago" />
+        <button type="button" class="btn-search-location" onclick="searchLocation()">Buscar</button>
+      </div>
+      <div id="pub-map" class="pub-map-container" style="display:none"></div>
+      <p id="pub-location-confirm" class="location-confirm-text" style="display:none"></p>
+    </div>
+    <div class="form-group">
+      <label>Tu nombre</label>
+      <input type="text" id="pub-contact-name" placeholder="Juan Pérez" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>Teléfono de contacto</label>
+        <input type="text" id="pub-phone" placeholder="+56 9 1234 5678" />
+      </div>
+      <div class="form-group">
+        <label>Correo electrónico</label>
+        <input type="email" id="pub-email" placeholder="correo@ejemplo.com" />
+      </div>
+    </div>
+    <button class="btn-submit" onclick="publishPet()">Publicar reporte</button>
+    <div id="publish-msg" class="message"></div>
+  </div>
+</div>
+
+<!-- MODAL DETALLE -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title" id="detail-name">-</h2>
+      <button class="btn-close" onclick="closeModal('modal-detail')">×</button>
+    </div>
+    <div id="detail-photo-wrap" style="margin-bottom:16px; display:none">
+      <img id="detail-photo" style="width:100%; border-radius:10px; max-height:220px; object-fit:contain; background:white;" />
+    </div>
+    <div class="detail-info">
+      <div class="detail-field">
+        <label>Especie</label>
+        <p id="detail-species">-</p>
+      </div>
+      <div class="detail-field">
+        <label>Sexo</label>
+        <p id="detail-gender">-</p>
+      </div>
+      <div class="detail-field">
+        <label>Raza</label>
+        <p id="detail-breed">-</p>
+      </div>
+      <div class="detail-field">
+        <label>Color</label>
+        <p id="detail-color">-</p>
+      </div>
+      <div class="detail-field">
+        <label>Teléfono</label>
+        <p id="detail-phone">-</p>
+      </div>
+      <div class="detail-field">
+        <label>Fecha</label>
+        <p id="detail-date">-</p>
+      </div>
+      <div class="detail-field">
+        <label>Hora aprox.</label>
+        <p id="detail-time">-</p>
+      </div>
+    </div>
+    <div class="detail-field" style="margin-bottom:12px">
+      <label>Descripción</label>
+      <p id="detail-desc" style="font-size:14px; margin-top:4px; color:#444">-</p>
+    </div>
+    <div class="detail-field">
+      <label>Ubicación</label>
+      <p id="detail-location" style="font-size:14px; margin-top:4px;">-</p>
+    </div>
+    <div id="detail-map"></div>
+    <button class="btn-gmaps" onclick="openGoogleMaps()">Abrir en Google Maps</button>
+    <button class="btn-report-encounter" id="btn-report-encounter" onclick="openReportEncounter()" style="display:none">
+      🐾 Reportar encuentro
+    </button>
+  </div>
+</div>
+
+<!-- MODAL REPORTAR ENCUENTRO (para lost-pets) -->
+<div class="modal-overlay" id="modal-encounter">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">Reportar encuentro</h2>
+      <button class="btn-close" onclick="closeModal('modal-encounter')">×</button>
+    </div>
+
+    <div class="encounter-pet-card" id="enc-pet-card">
+      <div class="encounter-pet-img" id="enc-pet-img"></div>
+      <div class="encounter-pet-info">
+        <div class="encounter-pet-name" id="enc-pet-name">-</div>
+        <div class="encounter-pet-meta" id="enc-pet-meta">-</div>
+        <div class="encounter-pet-loc" id="enc-pet-loc">-</div>
+      </div>
+    </div>
+
+    <div class="encounter-section-title">Datos del hallazgo</div>
+
+    <div class="form-group">
+      <label>Foto donde la encontraste (opcional)</label>
+      <div class="photo-upload-wrap" onclick="document.getElementById('enc-photo').click()">
+        <input type="file" id="enc-photo" accept="image/*" style="display:none" onchange="previewEncounterPhoto(event)" />
+        <div id="enc-photo-preview" class="photo-preview-empty">
+          <i data-lucide="camera"></i>
+          <span>Haz click para subir una foto</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>¿Dónde la encontraste?</label>
+      <div class="location-search-wrap">
+        <input type="text" id="enc-location" placeholder="Av. Providencia 1234, Santiago" />
+        <button type="button" class="btn-search-location" onclick="searchEncounterLocation()">Buscar</button>
+      </div>
+      <div id="enc-map" class="pub-map-container" style="display:none"></div>
+      <p id="enc-location-confirm" class="location-confirm-text" style="display:none"></p>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Fecha del encuentro</label>
+        <input type="date" id="enc-date" />
+      </div>
+      <div class="form-group">
+        <label>Hora aproximada</label>
+        <input type="time" id="enc-time" />
+      </div>
+    </div>
+
+    <div class="encounter-section-title">Información de contacto</div>
+
+    <div class="form-group">
+      <label>Tu nombre</label>
+      <input type="text" id="enc-contact-name" placeholder="Juan Pérez" />
+    </div>
+    <div class="form-group">
+      <label>Tu teléfono</label>
+      <input type="text" id="enc-phone" placeholder="+56 9 1234 5678" />
+    </div>
+
+    <div class="encounter-owner-contact">
+      <span>📱 Teléfono del dueño:</span>
+      <strong id="enc-owner-phone">-</strong>
+    </div>
+
+    <button class="btn-submit" onclick="submitEncounter()">Confirmar encuentro</button>
+    <div id="encounter-msg" class="message"></div>
+  </div>
+</div>
+
+<!-- MODAL ES MI MASCOTA (para found-pets) -->
+<div class="modal-overlay" id="modal-claim">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 class="modal-title">¿Es tu mascota?</h2>
+      <button class="btn-close" onclick="closeModal('modal-claim')">×</button>
+    </div>
+
+    <div class="encounter-pet-card">
+      <div class="encounter-pet-img" id="claim-pet-img"></div>
+      <div class="encounter-pet-info">
+        <div class="encounter-pet-name" id="claim-pet-name">-</div>
+        <div class="encounter-pet-meta" id="claim-pet-meta">-</div>
+        <div class="encounter-pet-loc" id="claim-pet-loc">-</div>
+      </div>
+    </div>
+
+    <div class="encounter-section-title">Tus datos de contacto</div>
+
+    <div class="form-group">
+      <label>Tu nombre</label>
+      <input type="text" id="claim-name" placeholder="Juan Pérez" />
+    </div>
+    <div class="form-group">
+      <label>Tu teléfono</label>
+      <input type="text" id="claim-phone" placeholder="+56 9 1234 5678" />
+    </div>
+
+    <div class="encounter-owner-contact">
+      <span>Teléfono de quien la encontró:</span>
+      <strong id="claim-finder-phone">-</strong>
+    </div>
+
+    <button class="btn-submit" onclick="submitClaim()">Confirmar que es mi mascota</button>
+    <div id="claim-msg" class="message"></div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
