@@ -586,3 +586,13 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 });
 
 window.onload = function() { init(); };
+
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = {
+    init, filterCards, renderCards, showSection, selectComuna, renderComunaList,
+    updateBreedsBySpecies, updatePubBreedsBySpecies, updateCounts, showMsg,
+    populateBreedColorFilters, populatePubColors, getMockLost, getMockFound,
+    initComunaDropdown, closeModal, openDetail, openClaimModal, submitClaim,
+    openPublish, togglePubFields, publishPet, openReportEncounter
+  };
+}

@@ -6,7 +6,9 @@
   "scripts": {
     "start": "npx serve . -p 3000",
     "dev": "npx live-server --port=3000 --open=index.html",
-    "preview": "npx serve . -p 3000 --no-clipboard"
+    "preview": "npx serve . -p 3000 --no-clipboard",
+    "test": "jest",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [
     "mascotas",
@@ -18,7 +20,18 @@
   "license": "MIT",
   "devDependencies": {
     "serve": "^14.2.0",
-    "live-server": "^1.2.2"
+    "live-server": "^1.2.2",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "app.js"
+    ]
   },
   "engines": {
     "node": ">=16.0.0"
